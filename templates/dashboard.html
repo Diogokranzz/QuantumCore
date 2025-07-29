@@ -1,0 +1,572 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - QuantumCore{% endblock %}
+
+{% block content %}
+<div class="quantum-main">
+    <!-- Header do Dashboard -->
+    <section class="dashboard-header">
+        <div class="container">
+            <h1 class="quantum-text-glow">Dashboard Quântico</h1>
+            <p class="dashboard-subtitle">Monitoramento em tempo real do sistema quântico</p>
+            
+            <!-- Estatísticas Rápidas -->
+            <div class="dashboard-stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="energy-level">0</span>
+                    <span class="stat-label">Energia (eV)</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="entropy-value">0</span>
+                    <span class="stat-label">Entropia</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="coherence-time">0</span>
+                    <span class="stat-label">Coerência (ms)</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="quantum-state">|0⟩</span>
+                    <span class="stat-label">Estado</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gráficos Quânticos -->
+    <section class="quantum-charts">
+        <div class="container">
+            <h2 class="section-title">Visualização de Dados Quânticos</h2>
+            
+            <div class="charts-grid">
+                <!-- Gráfico de Energia -->
+                <div class="chart-card">
+                    <h3>Energia Quântica</h3>
+                    <div class="chart-container">
+                        <canvas id="energy-chart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Gráfico de Entropia -->
+                <div class="chart-card">
+                    <h3>Entropia Quântica</h3>
+                    <div class="chart-container">
+                        <canvas id="entropy-chart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Gráfico de Coerência -->
+                <div class="chart-card">
+                    <h3>Tempo de Coerência</h3>
+                    <div class="chart-container">
+                        <canvas id="coherence-chart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Controles de IA -->
+    <section class="ai-controls">
+        <div class="container">
+            <h2>Treinamento da IA</h2>
+            <p class="text-center">Treine o modelo da IA com os dados mais recentes para as próximas 24 horas. Insira novos dados quânticos manualmente.</p>
+            
+            <div class="controls-grid">
+                <div class="control-card">
+                    <h3>Adicionar Dados Quânticos</h3>
+                    <p>Insira novos dados para treinar o modelo de IA</p>
+                    <form class="quantum-form" id="data-form">
+                        <div class="form-group">
+                            <label class="quantum-label" for="energy">Energia (eV)</label>
+                            <input type="number" id="energy" name="energy" class="quantum-input" step="0.1" min="0" max="1000" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="quantum-label" for="entropy">Entropia</label>
+                            <input type="number" id="entropy" name="entropy" class="quantum-input" step="0.01" min="0" max="1" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="quantum-label" for="coherence">Tempo de Coerência (ms)</label>
+                            <input type="number" id="coherence" name="coherence" class="quantum-input" step="0.1" min="0" max="1000" required>
+                        </div>
+                        
+                        <button type="submit" class="quantum-btn primary">Adicionar Dados</button>
+                    </form>
+                </div>
+                
+                <div class="control-card">
+                    <h3>Treinar Modelo</h3>
+                    <p>Execute o treinamento do modelo de IA com os dados coletados</p>
+                    <button id="train-ai-btn" class="quantum-btn primary">Treinar IA</button>
+                    
+                    <div class="status-indicators">
+                        <div class="status-item">
+                            <span class="status-dot" id="model-status"></span>
+                            <span>Modelo Ativo</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-dot" id="data-status"></span>
+                            <span>Dados Sincronizados</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-dot" id="api-status"></span>
+                            <span>API Online</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dados Recentes -->
+    <section class="recent-data">
+        <div class="container">
+            <h2>Dados Quânticos Recentes</h2>
+            
+            <div class="table-container">
+                <table class="quantum-table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Energia (eV)</th>
+                            <th>Entropia</th>
+                            <th>Coerência (ms)</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-table">
+                        <!-- Dados serão inseridos via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Scripts específicos do Dashboard -->
+<script>
+class DashboardManager {
+    constructor() {
+        this.dataPoints = [];
+        this.charts = {};
+        this.isTraining = false;
+        this.trainingProgress = 0;
+        
+        this.initializeCharts();
+        this.initializeControls();
+        this.startRealTimeUpdates();
+    }
+
+    initializeCharts() {
+        // Dados de exemplo para os gráficos
+        const sampleData = {
+            energy: [45, 52, 48, 55, 60, 58, 62, 65, 68, 70, 72, 75],
+            entropy: [0.2, 0.3, 0.25, 0.35, 0.4, 0.38, 0.42, 0.45, 0.48, 0.5, 0.52, 0.55],
+            coherence: [120, 115, 125, 110, 105, 108, 102, 98, 95, 92, 88, 85]
+        };
+
+        const labels = ['00:00', '02:00', '04:00', '06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
+
+        // Gráfico de Energia
+        const energyCtx = document.getElementById('energy-chart');
+        if (energyCtx) {
+            this.charts.energy = new Chart(energyCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Energia Quântica',
+                        data: sampleData.energy,
+                        borderColor: '#00d4ff',
+                        backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff',
+                                font: {
+                                    family: 'Rajdhani, sans-serif'
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { 
+                                color: '#a1a1aa',
+                                font: {
+                                    family: 'Rajdhani, sans-serif'
+                                }
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        y: {
+                            ticks: { 
+                                color: '#a1a1aa',
+                                font: {
+                                    family: 'Rajdhani, sans-serif'
+                                }
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Gráfico de Entropia
+        const entropyCtx = document.getElementById('entropy-chart');
+        if (entropyCtx) {
+            this.charts.entropy = new Chart(entropyCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Entropia Quântica',
+                        data: sampleData.entropy,
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff',
+                                font: {
+                                    family: 'Rajdhani, sans-serif'
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { 
+                                color: '#a1a1aa',
+                                font: {
+                                    family: 'Rajdhani, sans-serif'
+                                }
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        y: {
+                            ticks: { 
+                                color: '#a1a1aa',
+                                font: {
+                                    family: 'Rajdhani, sans-serif'
+                                }
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Gráfico de Coerência
+        const coherenceCtx = document.getElementById('coherence-chart');
+        if (coherenceCtx) {
+            this.charts.coherence = new Chart(coherenceCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Tempo de Coerência',
+                        data: sampleData.coherence,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff',
+                                font: {
+                                    family: 'Rajdhani, sans-serif'
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { 
+                                color: '#a1a1aa',
+                                font: {
+                                    family: 'Rajdhani, sans-serif'
+                                }
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        y: {
+                            ticks: { 
+                                color: '#a1a1aa',
+                                font: {
+                                    family: 'Rajdhani, sans-serif'
+                                }
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    initializeControls() {
+        // Formulário de dados
+        const dataForm = document.getElementById('data-form');
+        dataForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.addDataPoint();
+        });
+
+        // Botão treinar IA
+        const trainBtn = document.getElementById('train-ai-btn');
+        trainBtn.addEventListener('click', () => {
+            this.trainAI();
+        });
+
+        // Atualizar status inicial
+        this.updateStatusIndicators();
+    }
+
+    addDataPoint() {
+        const energy = parseFloat(document.getElementById('energy').value);
+        const entropy = parseFloat(document.getElementById('entropy').value);
+        const coherence = parseFloat(document.getElementById('coherence').value);
+
+        // Validar dados
+        if (isNaN(energy) || isNaN(entropy) || isNaN(coherence)) {
+            this.showNotification('Por favor, insira valores válidos para todos os campos.', 'error');
+            return;
+        }
+
+        if (energy < 0 || energy > 1000) {
+            this.showNotification('Energia deve estar entre 0 e 1000 eV.', 'error');
+            return;
+        }
+
+        if (entropy < 0 || entropy > 1) {
+            this.showNotification('Entropia deve estar entre 0 e 1.', 'error');
+            return;
+        }
+
+        if (coherence < 0 || coherence > 1000) {
+            this.showNotification('Tempo de coerência deve estar entre 0 e 1000 ms.', 'error');
+            return;
+        }
+
+        // Adicionar dados
+        const dataPoint = {
+            timestamp: new Date(),
+            energy: energy,
+            entropy: entropy,
+            coherence: coherence,
+            state: this.getRandomState()
+        };
+
+        this.dataPoints.unshift(dataPoint);
+        
+        // Manter apenas os últimos 100 pontos
+        if (this.dataPoints.length > 100) {
+            this.dataPoints = this.dataPoints.slice(0, 100);
+        }
+
+        // Atualizar gráficos
+        this.updateCharts();
+        
+        // Atualizar tabela
+        this.updateDataTable();
+        
+        // Limpar formulário
+        document.getElementById('data-form').reset();
+        
+        this.showNotification('Dados adicionados com sucesso!', 'success');
+    }
+
+    trainAI() {
+        if (this.isTraining) {
+            this.showNotification('Treinamento já está em andamento!', 'warning');
+            return;
+        }
+
+        if (this.dataPoints.length < 5) {
+            this.showNotification('É necessário pelo menos 5 pontos de dados para treinar a IA.', 'error');
+            return;
+        }
+
+        this.isTraining = true;
+        this.trainingProgress = 0;
+        
+        const trainBtn = document.getElementById('train-ai-btn');
+        const originalText = trainBtn.textContent;
+        
+        // Simular processo de treinamento
+        const trainingInterval = setInterval(() => {
+            this.trainingProgress += 10;
+            trainBtn.textContent = `Treinando... ${this.trainingProgress}%`;
+            
+            if (this.trainingProgress >= 100) {
+                clearInterval(trainingInterval);
+                this.isTraining = false;
+                trainBtn.textContent = originalText;
+                
+                this.showNotification('IA treinada com sucesso! Modelo atualizado.', 'success');
+                this.updateStatusIndicators();
+                
+                // Atualizar estatísticas com dados do modelo treinado
+                this.updateStatsWithTrainedModel();
+            }
+        }, 200);
+    }
+
+    updateStatsWithTrainedModel() {
+        // Simular predições do modelo treinado
+        const energy = Math.floor(Math.random() * 50) + 60;
+        const entropy = (Math.random() * 0.3 + 0.3).toFixed(3);
+        const coherence = (Math.random() * 30 + 90).toFixed(1);
+        const states = ['|0⟩', '|1⟩', '|+⟩', '|-⟩'];
+        const state = states[Math.floor(Math.random() * states.length)];
+
+        document.getElementById('energy-level').textContent = energy;
+        document.getElementById('entropy-value').textContent = entropy;
+        document.getElementById('coherence-time').textContent = coherence;
+        document.getElementById('quantum-state').textContent = state;
+    }
+
+    updateCharts() {
+        // Atualizar gráficos com novos dados
+        const recentData = this.dataPoints.slice(0, 12).reverse();
+        
+        if (recentData.length > 0) {
+            const labels = recentData.map(dp => 
+                dp.timestamp.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+            );
+            const energyData = recentData.map(dp => dp.energy);
+            const entropyData = recentData.map(dp => dp.entropy);
+            const coherenceData = recentData.map(dp => dp.coherence);
+
+            // Atualizar gráfico de energia
+            if (this.charts.energy) {
+                this.charts.energy.data.labels = labels;
+                this.charts.energy.data.datasets[0].data = energyData;
+                this.charts.energy.update('none');
+            }
+
+            // Atualizar gráfico de entropia
+            if (this.charts.entropy) {
+                this.charts.entropy.data.labels = labels;
+                this.charts.entropy.data.datasets[0].data = entropyData;
+                this.charts.entropy.update('none');
+            }
+
+            // Atualizar gráfico de coerência
+            if (this.charts.coherence) {
+                this.charts.coherence.data.labels = labels;
+                this.charts.coherence.data.datasets[0].data = coherenceData;
+                this.charts.coherence.update('none');
+            }
+        }
+    }
+
+    updateDataTable() {
+        const tbody = document.getElementById('data-table');
+        tbody.innerHTML = '';
+        
+        // Mostrar os 10 dados mais recentes
+        this.dataPoints.slice(0, 10).forEach(dataPoint => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${dataPoint.timestamp.toLocaleString('pt-BR')}</td>
+                <td>${dataPoint.energy.toFixed(1)}</td>
+                <td>${dataPoint.entropy.toFixed(3)}</td>
+                <td>${dataPoint.coherence.toFixed(1)}</td>
+                <td>${dataPoint.state}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    updateStatusIndicators() {
+        const modelStatus = document.getElementById('model-status');
+        const dataStatus = document.getElementById('data-status');
+        const apiStatus = document.getElementById('api-status');
+
+        // Status do modelo (ativo se treinado)
+        modelStatus.className = this.isTraining || this.dataPoints.length > 0 ? 'status-dot quantum-active' : 'status-dot';
+        
+        // Status dos dados (sincronizados se há dados)
+        dataStatus.className = this.dataPoints.length > 0 ? 'status-dot quantum-active' : 'status-dot';
+        
+        // Status da API (sempre online)
+        apiStatus.className = 'status-dot quantum-active';
+    }
+
+    startRealTimeUpdates() {
+        // Atualizar estatísticas periodicamente
+        setInterval(() => {
+            if (!this.isTraining) {
+                this.updateStats();
+            }
+        }, 5000);
+
+        // Atualizar status periodicamente
+        setInterval(() => {
+            this.updateStatusIndicators();
+        }, 10000);
+    }
+
+    updateStats() {
+        // Simular dados em tempo real
+        const energy = Math.floor(Math.random() * 30) + 50;
+        const entropy = (Math.random() * 0.5 + 0.2).toFixed(3);
+        const coherence = (Math.random() * 50 + 80).toFixed(1);
+        const states = ['|0⟩', '|1⟩', '|+⟩', '|-⟩'];
+        const state = states[Math.floor(Math.random() * states.length)];
+
+        document.getElementById('energy-level').textContent = energy;
+        document.getElementById('entropy-value').textContent = entropy;
+        document.getElementById('coherence-time').textContent = coherence;
+        document.getElementById('quantum-state').textContent = state;
+    }
+
+    getRandomState() {
+        const states = ['|0⟩', '|1⟩', '|+⟩', '|-⟩'];
+        return states[Math.floor(Math.random() * states.length)];
+    }
+
+    showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `quantum-notification ${type}`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+}
+
+// Inicializar dashboard quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    window.dashboardManager = new DashboardManager();
+});
+</script>
+{% endblock %} 

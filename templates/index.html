@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}QuantumCore - Sistema de Computação Quântica{% endblock %}
+
+{% block content %}
+<div class="quantum-main">
+    <!-- Hero Section -->
+    <section class="quantum-hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title quantum-text-glow">QuantumCore</h1>
+                <p class="hero-description">Sistema avançado de computação quântica com IA integrada para análise e previsão de dados quânticos em tempo real.</p>
+                <div class="hero-actions">
+                    <a href="{{ url_for('dashboard') }}" class="quantum-btn primary">Acessar Dashboard</a>
+                    <a href="{{ url_for('quantum_lab') }}" class="quantum-btn secondary">Laboratório Quântico</a>
+                </div>
+            </div>
+            
+            <div class="hero-visual">
+                <div class="quantum-sphere">
+                    <div class="sphere-core"></div>
+                    <div class="sphere-orbit orbit-1"></div>
+                    <div class="sphere-orbit orbit-2"></div>
+                    <div class="sphere-orbit orbit-3"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="quantum-features">
+        <div class="container">
+            <h2 class="section-title quantum-text-glow">Capacidades Quânticas</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚛</div>
+                    <h3>Estados Quânticos</h3>
+                    <p>Monitore e analise estados quânticos em tempo real com precisão atômica.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Análise de Entropia</h3>
+                    <p>Medições avançadas de entropia quântica para otimização de sistemas.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3>IA Quântica</h3>
+                    <p>Algoritmos de inteligência artificial baseados em princípios quânticos.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔮</div>
+                    <h3>Previsões</h3>
+                    <p>Previsões quânticas com alta precisão usando modelos de IA avançados.</p>
+                    <div class="prediction-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">1</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">PONTOS DE DADOS</span>
+                            <span class="stat-value">5</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">ESTADOS QUÂNTICOS</span>
+                            <span class="stat-value">24</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">PREVISÕES GERADAS</span>
+                            <span class="stat-value">94</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">PRECISÃO DA IA</span>
+                            <span class="stat-value">98.7%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔬</div>
+                    <h3>Laboratório Quântico</h3>
+                    <p>Experimente com diferentes configurações quânticas e observe os resultados em tempo real.</p>
+                    <a href="{{ url_for('quantum_lab') }}" class="quantum-btn primary">Acessar Laboratório</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="quantum-stats">
+        <div class="container">
+            <h2 class="section-title quantum-text-glow">Estatísticas do Sistema</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-readings">1,247</div>
+                    <div class="stat-label">Leituras Quânticas</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-number" id="quantum-states">24</div>
+                    <div class="stat-label">Estados Quânticos</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-number" id="ai-predictions">94</div>
+                    <div class="stat-label">Previsões da IA</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-number" id="system-accuracy">98.7%</div>
+                    <div class="stat-label">Precisão do Sistema</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lab Preview Section -->
+    <section class="quantum-lab-preview">
+        <div class="container">
+            <div class="lab-content">
+                <h2 class="section-title quantum-text-glow">Laboratório Quântico</h2>
+                <p>Explore o poder da computação quântica em nosso laboratório interativo. Experimente com diferentes estados quânticos, aplique portas lógicas e observe os resultados em tempo real.</p>
+                <div class="lab-features">
+                    <div class="lab-feature">
+                        <span class="feature-icon">⚛</span>
+                        <span>Estados Quânticos</span>
+                    </div>
+                    <div class="lab-feature">
+                        <span class="feature-icon">🔬</span>
+                        <span>Medições em Tempo Real</span>
+                    </div>
+                    <div class="lab-feature">
+                        <span class="feature-icon">📊</span>
+                        <span>Visualização Avançada</span>
+                    </div>
+                </div>
+                <a href="{{ url_for('quantum_lab') }}" class="quantum-btn primary">Acessar Laboratório</a>
+            </div>
+            
+            <div class="lab-visual">
+                <div class="quantum-visualization">
+                    <div class="bloch-sphere-preview">
+                        <div class="sphere-container">
+                            <div class="sphere-surface"></div>
+                            <div class="state-vector" id="state-vector"></div>
+                            <div class="coordinate-labels">
+                                <span class="label-x">X</span>
+                                <span class="label-y">Y</span>
+                                <span class="label-z">Z</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animar estatísticas
+    function animateStats() {
+        const stats = [
+            { element: 'total-readings', target: 1247, suffix: '' },
+            { element: 'quantum-states', target: 24, suffix: '' },
+            { element: 'ai-predictions', target: 94, suffix: '' },
+            { element: 'system-accuracy', target: 98.7, suffix: '%' }
+        ];
+
+        stats.forEach(stat => {
+            const element = document.getElementById(stat.element);
+            if (element) {
+                let current = 0;
+                const increment = stat.target / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= stat.target) {
+                        current = stat.target;
+                        clearInterval(timer);
+                    }
+                    element.textContent = current.toFixed(stat.target % 1 === 0 ? 0 : 1) + stat.suffix;
+                }, 50);
+            }
+        });
+    }
+
+    // Animar esfera de Bloch
+    function animateBlochSphere() {
+        const stateVector = document.getElementById('state-vector');
+        if (!stateVector) return;
+
+        const states = [
+            { x: 0, y: 0, z: 1, color: '#00d4ff' },
+            { x: 0, y: 0, z: -1, color: '#8b5cf6' },
+            { x: 1, y: 0, z: 0, color: '#10b981' },
+            { x: -1, y: 0, z: 0, color: '#f59e0b' },
+            { x: 0, y: 1, z: 0, color: '#ec4899' }
+        ];
+
+        let currentState = 0;
+        setInterval(() => {
+            const state = states[currentState];
+            stateVector.style.transform = `translate3d(${state.x * 50}px, ${state.y * 50}px, ${state.z * 50}px)`;
+            stateVector.style.backgroundColor = state.color;
+            currentState = (currentState + 1) % states.length;
+        }, 3000);
+    }
+
+    // Animar partículas quânticas
+    function createQuantumParticles() {
+        const particlesContainer = document.getElementById('quantum-particles');
+        if (!particlesContainer) return;
+
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'quantum-particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            particlesContainer.appendChild(particle);
+        }
+    }
+
+    // Inicializar animações
+    setTimeout(animateStats, 1000);
+    animateBlochSphere();
+    createQuantumParticles();
+
+    // Animar cards ao scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.feature-card, .stat-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = 'all 0.6s ease';
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %} 

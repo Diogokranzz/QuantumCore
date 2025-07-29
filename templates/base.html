@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} | QuantumCore</title>
+    
+    <!-- Favicon quântico -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quantum-core.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quantum-effects.css') }}">
+    
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Efeito de partículas quânticas -->
+    <div id="quantum-particles"></div>
+    
+    <!-- Header -->
+    <header class="quantum-header">
+        <div class="container">
+            <div class="logo">
+                <span class="quantum-symbol">⚛</span>
+                <span class="logo-text">QuantumCore</span>
+            </div>
+            <nav class="quantum-nav">
+                <a href="{{ url_for('index') }}" class="nav-link">Início</a>
+                <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
+                <a href="{{ url_for('quantum_lab') }}" class="nav-link">Laboratório</a>
+                <button class="quantum-btn" id="train-ai-btn">Treinar IA</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Conteúdo principal -->
+    <main class="quantum-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer simplificado -->
+    <footer class="quantum-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>QuantumCore</h3>
+                    <p>Sistema de Inteligência Quântica Avançada</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Status do Sistema</h4>
+                    <div class="status-indicators">
+                        <div class="status-item">
+                            <span class="status-dot quantum-active"></span>
+                            <span>IA Quântica</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-dot quantum-active"></span>
+                            <span>Banco de Dados</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-dot quantum-active"></span>
+                            <span>Previsões</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 QuantumCore. Explorando os limites da computação quântica.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/quantum-core.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/quantum-effects.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html> 

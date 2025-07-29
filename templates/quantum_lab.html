@@ -1,0 +1,493 @@
+{% extends "base.html" %}
+
+{% block title %}Laboratório Quântico - QuantumCore{% endblock %}
+
+{% block content %}
+<div class="quantum-main">
+    <section class="quantum-lab">
+        <div class="container">
+            <div class="lab-header">
+                <h1 class="quantum-text-glow">Laboratório Quântico</h1>
+                <p class="lab-description">Experimente com estados quânticos e observe os resultados em tempo real</p>
+            </div>
+
+            <div class="lab-grid">
+                <!-- Configuração de Estado -->
+                <div class="lab-card">
+                    <h3>Configuração de Estado</h3>
+                    
+                    <div class="control-group">
+                        <label class="quantum-label">ESTADO INICIAL</label>
+                        <select id="initial-state" class="quantum-select">
+                            <option value="|0⟩">|0⟩ (Estado Fundamental)</option>
+                            <option value="|1⟩">|1⟩ (Estado Excitado)</option>
+                            <option value="|+⟩">|+⟩ (Superposição)</option>
+                            <option value="|-⟩">|-⟩ (Superposição)</option>
+                            <option value="|i⟩">|i⟩ (Estado Imaginário)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="quantum-label">ENERGIA (eV)</label>
+                        <div class="slider-container">
+                            <input type="range" id="energy-slider" class="quantum-slider" min="0" max="200" value="100" step="0.1">
+                            <span class="slider-value" id="energy-value">100.0</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="quantum-label">TEMPERATURA (K)</label>
+                        <div class="slider-container">
+                            <input type="range" id="temperature-slider" class="quantum-slider" min="0" max="300" value="127" step="0.1">
+                            <span class="slider-value" id="temperature-value">127.0</span>
+                        </div>
+                    </div>
+
+                    <button id="apply-config" class="quantum-btn primary">Aplicar Configuração</button>
+                </div>
+
+                <!-- Operações Quânticas -->
+                <div class="lab-card">
+                    <h3>Operações Quânticas</h3>
+                    
+                    <div class="quantum-gates">
+                        <button class="gate-btn" data-gate="H">Porta H</button>
+                        <button class="gate-btn" data-gate="X">Porta X</button>
+                        <button class="gate-btn" data-gate="Y">Porta Y</button>
+                        <button class="gate-btn" data-gate="Z">Porta Z</button>
+                        <button class="gate-btn" data-gate="CNOT">CNOT</button>
+                        <button class="gate-btn" data-gate="SWAP">SWAP</button>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="quantum-label">ÂNGULO DE ROTAÇÃO (π)</label>
+                        <div class="slider-container">
+                            <input type="range" id="rotation-slider" class="quantum-slider" min="0" max="2" value="1.2" step="0.1">
+                            <span class="slider-value" id="rotation-value">1.2</span>
+                        </div>
+                    </div>
+
+                    <button id="apply-operation" class="quantum-btn primary">Aplicar Operação</button>
+                </div>
+
+                <!-- Medições -->
+                <div class="lab-card">
+                    <h3>Medições</h3>
+                    
+                    <div class="measurement-buttons">
+                        <button id="measure-state" class="quantum-btn">Medir Estado</button>
+                        <button id="measure-energy" class="quantum-btn">Medir Energia</button>
+                        <button id="measure-entropy" class="quantum-btn">Medir Entropia</button>
+                    </div>
+
+                    <div class="measurement-results">
+                        <div class="result-item">
+                            <span class="result-label">Estado Atual:</span>
+                            <span class="result-value" id="current-state">|0⟩</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Energia:</span>
+                            <span class="result-value" id="current-energy">100.0 eV</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Entropia:</span>
+                            <span class="result-value" id="current-entropy">0.000</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualização Quântica -->
+            <div class="quantum-visualization">
+                <h3>Visualização do Estado Quântico</h3>
+                <div class="visualization-grid">
+                    <div class="visualization-card">
+                        <h4>Esfera de Bloch</h4>
+                        <div class="bloch-sphere" id="bloch-sphere">
+                            <canvas id="bloch-canvas" width="200" height="200"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="visualization-card">
+                        <h4>Matriz de Densidade</h4>
+                        <div class="density-matrix" id="density-matrix">
+                            <div class="matrix-row">
+                                <span class="matrix-element" id="rho-00">1.000</span>
+                                <span class="matrix-element" id="rho-01">0.000</span>
+                            </div>
+                            <div class="matrix-row">
+                                <span class="matrix-element" id="rho-10">0.000</span>
+                                <span class="matrix-element" id="rho-11">0.000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Histórico de Operações -->
+            <div class="operation-history">
+                <h3>Histórico de Operações</h3>
+                <div class="history-container">
+                    <div id="operation-log" class="operation-log">
+                        <!-- Operações serão adicionadas aqui -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+// Debug: Verificar se o script está carregando
+console.log('Quantum Lab Script carregado');
+
+class QuantumLab {
+    constructor() {
+        console.log('Inicializando QuantumLab...');
+        this.currentState = '|0⟩';
+        this.energy = 100.0;
+        this.temperature = 127.0;
+        this.entropy = 0.0;
+        this.rotationAngle = 1.2;
+        this.operationHistory = [];
+        
+        this.initializeControls();
+        this.initializeVisualization();
+        this.updateDisplay();
+        console.log('QuantumLab inicializado com sucesso');
+    }
+
+    initializeControls() {
+        console.log('Inicializando controles...');
+        
+        // Sliders
+        const energySlider = document.getElementById('energy-slider');
+        const temperatureSlider = document.getElementById('temperature-slider');
+        const rotationSlider = document.getElementById('rotation-slider');
+        
+        if (energySlider) {
+            energySlider.addEventListener('input', (e) => {
+                this.energy = parseFloat(e.target.value);
+                const energyValue = document.getElementById('energy-value');
+                if (energyValue) energyValue.textContent = this.energy.toFixed(1);
+                this.updateDisplay();
+            });
+        }
+
+        if (temperatureSlider) {
+            temperatureSlider.addEventListener('input', (e) => {
+                this.temperature = parseFloat(e.target.value);
+                const tempValue = document.getElementById('temperature-value');
+                if (tempValue) tempValue.textContent = this.temperature.toFixed(1);
+                this.updateDisplay();
+            });
+        }
+
+        if (rotationSlider) {
+            rotationSlider.addEventListener('input', (e) => {
+                this.rotationAngle = parseFloat(e.target.value);
+                const rotValue = document.getElementById('rotation-value');
+                if (rotValue) rotValue.textContent = this.rotationAngle.toFixed(1);
+            });
+        }
+
+        // Estado inicial
+        const initialState = document.getElementById('initial-state');
+        if (initialState) {
+            initialState.addEventListener('change', (e) => {
+                this.currentState = e.target.value;
+                this.updateDisplay();
+                this.addToHistory(`Estado inicial alterado para ${this.currentState}`);
+            });
+        }
+
+        // Botões de configuração
+        const applyConfig = document.getElementById('apply-config');
+        if (applyConfig) {
+            applyConfig.addEventListener('click', () => {
+                this.applyConfiguration();
+            });
+        }
+
+        // Portas quânticas
+        const gateButtons = document.querySelectorAll('.gate-btn');
+        gateButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const gate = e.target.dataset.gate;
+                this.applyQuantumGate(gate);
+            });
+        });
+
+        // Botão aplicar operação
+        const applyOperation = document.getElementById('apply-operation');
+        if (applyOperation) {
+            applyOperation.addEventListener('click', () => {
+                this.applyRotation();
+            });
+        }
+
+        // Medições
+        const measureState = document.getElementById('measure-state');
+        if (measureState) {
+            measureState.addEventListener('click', () => {
+                this.measureState();
+            });
+        }
+
+        const measureEnergy = document.getElementById('measure-energy');
+        if (measureEnergy) {
+            measureEnergy.addEventListener('click', () => {
+                this.measureEnergy();
+            });
+        }
+
+        const measureEntropy = document.getElementById('measure-entropy');
+        if (measureEntropy) {
+            measureEntropy.addEventListener('click', () => {
+                this.measureEntropy();
+            });
+        }
+        
+        console.log('Controles inicializados');
+    }
+
+    initializeVisualization() {
+        console.log('Inicializando visualização...');
+        this.drawBlochSphere();
+        this.updateDensityMatrix();
+    }
+
+    drawBlochSphere() {
+        const canvas = document.getElementById('bloch-canvas');
+        if (!canvas) {
+            console.error('Canvas não encontrado');
+            return;
+        }
+        
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = 80;
+
+        // Limpar canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Desenhar esfera
+        ctx.strokeStyle = '#00d4ff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+        ctx.stroke();
+
+        // Desenhar eixos
+        ctx.strokeStyle = '#8b5cf6';
+        ctx.lineWidth = 1;
+        
+        // Eixo X
+        ctx.beginPath();
+        ctx.moveTo(centerX - radius, centerY);
+        ctx.lineTo(centerX + radius, centerY);
+        ctx.stroke();
+        
+        // Eixo Y
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY - radius);
+        ctx.lineTo(centerX, centerY + radius);
+        ctx.stroke();
+
+        // Eixo Z
+        ctx.strokeStyle = '#10b981';
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(centerX, centerY - radius);
+        ctx.stroke();
+
+        // Desenhar estado atual
+        this.drawStateOnSphere(ctx, centerX, centerY, radius);
+    }
+
+    drawStateOnSphere(ctx, centerX, centerY, radius) {
+        let x, y, z;
+        
+        switch(this.currentState) {
+            case '|0⟩':
+                x = 0; y = 0; z = 1;
+                break;
+            case '|1⟩':
+                x = 0; y = 0; z = -1;
+                break;
+            case '|+⟩':
+                x = 1; y = 0; z = 0;
+                break;
+            case '|-⟩':
+                x = -1; y = 0; z = 0;
+                break;
+            case '|i⟩':
+                x = 0; y = 1; z = 0;
+                break;
+            default:
+                x = 0; y = 0; z = 1;
+        }
+
+        const screenX = centerX + x * radius * 0.8;
+        const screenY = centerY - z * radius * 0.8;
+
+        ctx.fillStyle = '#ff6b6b';
+        ctx.beginPath();
+        ctx.arc(screenX, screenY, 6, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+
+    updateDensityMatrix() {
+        let rho00, rho01, rho10, rho11;
+        
+        switch(this.currentState) {
+            case '|0⟩':
+                rho00 = 1.000; rho01 = 0.000; rho10 = 0.000; rho11 = 0.000;
+                break;
+            case '|1⟩':
+                rho00 = 0.000; rho01 = 0.000; rho10 = 0.000; rho11 = 1.000;
+                break;
+            case '|+⟩':
+                rho00 = 0.500; rho01 = 0.500; rho10 = 0.500; rho11 = 0.500;
+                break;
+            case '|-⟩':
+                rho00 = 0.500; rho01 = -0.500; rho10 = -0.500; rho11 = 0.500;
+                break;
+            case '|i⟩':
+                rho00 = 0.500; rho01 = 0.500; rho10 = -0.500; rho11 = 0.500;
+                break;
+            default:
+                rho00 = 1.000; rho01 = 0.000; rho10 = 0.000; rho11 = 0.000;
+        }
+
+        const rho00El = document.getElementById('rho-00');
+        const rho01El = document.getElementById('rho-01');
+        const rho10El = document.getElementById('rho-10');
+        const rho11El = document.getElementById('rho-11');
+        
+        if (rho00El) rho00El.textContent = rho00.toFixed(3);
+        if (rho01El) rho01El.textContent = rho01.toFixed(3);
+        if (rho10El) rho10El.textContent = rho10.toFixed(3);
+        if (rho11El) rho11El.textContent = rho11.toFixed(3);
+    }
+
+    applyConfiguration() {
+        this.addToHistory(`Configuração aplicada: E=${this.energy.toFixed(1)}eV, T=${this.temperature.toFixed(1)}K`);
+        this.showNotification('Configuração aplicada com sucesso!', 'success');
+    }
+
+    applyQuantumGate(gate) {
+        const gateEffects = {
+            'H': { name: 'Porta Hadamard', newState: '|+⟩', effect: 'Cria superposição' },
+            'X': { name: 'Porta Pauli-X', newState: '|1⟩', effect: 'Inverte o estado' },
+            'Y': { name: 'Porta Pauli-Y', newState: '|i⟩', effect: 'Rotação Y' },
+            'Z': { name: 'Porta Pauli-Z', newState: '|0⟩', effect: 'Fase Z' },
+            'CNOT': { name: 'CNOT', newState: '|1⟩', effect: 'NOT controlado' },
+            'SWAP': { name: 'SWAP', newState: '|0⟩', effect: 'Troca estados' }
+        };
+
+        const effect = gateEffects[gate];
+        this.currentState = effect.newState;
+        this.entropy = Math.random() * 0.5 + 0.1;
+        
+        this.addToHistory(`${effect.name}: ${effect.effect}`);
+        this.updateDisplay();
+        this.showNotification(`${effect.name} aplicada!`, 'info');
+    }
+
+    applyRotation() {
+        const angle = this.rotationAngle * Math.PI;
+        this.entropy = Math.sin(angle) * 0.3 + 0.2;
+        
+        this.addToHistory(`Rotação aplicada: ${this.rotationAngle}π radianos`);
+        this.updateDisplay();
+        this.showNotification('Rotação aplicada!', 'info');
+    }
+
+    measureState() {
+        const measurement = this.currentState;
+        this.addToHistory(`Medição de estado: ${measurement}`);
+        this.showNotification(`Estado medido: ${measurement}`, 'success');
+    }
+
+    measureEnergy() {
+        const measuredEnergy = this.energy + (Math.random() - 0.5) * 5;
+        this.addToHistory(`Medição de energia: ${measuredEnergy.toFixed(1)} eV`);
+        this.showNotification(`Energia medida: ${measuredEnergy.toFixed(1)} eV`, 'success');
+    }
+
+    measureEntropy() {
+        const measuredEntropy = this.entropy + (Math.random() - 0.5) * 0.1;
+        this.addToHistory(`Medição de entropia: ${measuredEntropy.toFixed(3)}`);
+        this.showNotification(`Entropia medida: ${measuredEntropy.toFixed(3)}`, 'success');
+    }
+
+    updateDisplay() {
+        const currentStateEl = document.getElementById('current-state');
+        const currentEnergyEl = document.getElementById('current-energy');
+        const currentEntropyEl = document.getElementById('current-entropy');
+        
+        if (currentStateEl) currentStateEl.textContent = this.currentState;
+        if (currentEnergyEl) currentEnergyEl.textContent = `${this.energy.toFixed(1)} eV`;
+        if (currentEntropyEl) currentEntropyEl.textContent = this.entropy.toFixed(3);
+        
+        this.drawBlochSphere();
+        this.updateDensityMatrix();
+    }
+
+    addToHistory(operation) {
+        const timestamp = new Date().toLocaleTimeString('pt-BR');
+        const logEntry = document.createElement('div');
+        logEntry.className = 'log-entry';
+        logEntry.innerHTML = `<span class="log-time">${timestamp}</span> <span class="log-operation">${operation}</span>`;
+        
+        const log = document.getElementById('operation-log');
+        if (log) {
+            log.insertBefore(logEntry, log.firstChild);
+            
+            // Manter apenas os últimos 10 registros
+            while (log.children.length > 10) {
+                log.removeChild(log.lastChild);
+            }
+        }
+    }
+
+    showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `quantum-notification ${type}`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+}
+
+// Inicializar laboratório quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM carregado, inicializando QuantumLab...');
+    try {
+        window.quantumLab = new QuantumLab();
+        console.log('QuantumLab inicializado com sucesso!');
+    } catch (error) {
+        console.error('Erro ao inicializar QuantumLab:', error);
+    }
+});
+
+// Fallback: Se DOMContentLoaded já foi disparado
+if (document.readyState === 'loading') {
+    console.log('DOM ainda carregando...');
+} else {
+    console.log('DOM já carregado, inicializando imediatamente...');
+    try {
+        window.quantumLab = new QuantumLab();
+        console.log('QuantumLab inicializado com sucesso!');
+    } catch (error) {
+        console.error('Erro ao inicializar QuantumLab:', error);
+    }
+}
+</script>
+{% endblock %} 
